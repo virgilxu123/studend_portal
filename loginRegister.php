@@ -10,7 +10,7 @@
     require_once "config.php";
     // Define variables and initialize with empty values
     $firstname = $lastname = $studentid = $password = $yearlevel = $block = "";
-    $firstname_err = $lastname_err = $studentid_err = $password_err = $yearlevel_err = $block_err = "";
+    $firstname_err = $lastname_err = $studentid_err = $password_err = $yearlevel_err = $block_err = $login_err = $idlogin_err = $pwlogin_err = "";
 
     if($_SERVER["REQUEST_METHOD"] == "POST"){
         if($_POST['submit']=="Sign up") {
@@ -66,6 +66,7 @@
                 $password_err = "Must have at least 6 characters";
             }else {
                 $password = $_POST["password"];
+                $password = password_hash($password, PASSWORD_DEFAULT);
             }
             // Validate yearlevel
             if(empty($_POST["yrlevel"])) {
@@ -90,31 +91,31 @@
         if($_POST["submit"]=="Log in") {
                 // Check if studentid is empty
             if(empty(trim($_POST["studentid"]))) {
-                $studentid_err = "Please enter studentid.";
+                $idlogin_err = "Please enter studentid";
             } else{
                 $studentid = trim($_POST["studentid"]);
             }
             // Check if password is empty
             if(empty(trim($_POST["password"]))){
-                $password_err = "Please enter your password.";
+                $pwlogin_err = "Please enter your password.";
             } else{
                 $password = trim($_POST["password"]);
             }
             // Validate credentials
-            if(empty($studentid_err) && empty($password_err)){
+            if(empty($idlogin_err) && empty($pwlogin_err)){
                 // Prepare a select statement
                 $sql = "SELECT studentid, firstname, password FROM studentstd WHERE studentid = ?";
                 if($stmt = $conn->prepare($sql)){
                     // Bind variables to the prepared statement as parameters
                     $stmt->bind_param("s", $param_studentid);
                     // Set parameters
-                    $param_username = $studentid;
+                    $param_studentid = trim($_POST["studentid"]);
                     // Attempt to execute the prepared statement
                     if($stmt->execute()){
                         // Store result
                         $stmt->store_result();
                         // Check if username exists, if yes then verify password
-                        if($stmt->num_rows == 1){
+                        if($stmt->num_rows() == 1){
                             // Bind result variables
                             $stmt->bind_result($studentid, $firstname, $hashed_password);
                             if($stmt->fetch()){
@@ -135,7 +136,7 @@
                             }
                         } else{
                             // Username doesn't exist, display a generic error message
-                            $login_err = "Invalid username or password.";
+                            $login_err = "Student ID not yet register.";
                         }
                     } else{
                     echo "Oops! Something went wrong. Please try again later.";
@@ -172,13 +173,16 @@
                 <div>
                     <label for="studentid">Student ID:</label>
                     <input type="text" name="studentid" >
+                    <span><?php echo  $idlogin_err; ?></span>
                 </div>
                 <div>
                     <label for="password">Password:</label>
                     <input type="password" name="password">
+                    <span><?php echo  $pwlogin_err; ?></span>
                 </div>
                 <input type="submit" name="submit" value="Log in" class="btn1">
             </div>
+            <span><?php echo $login_err; ?></span>
         </div>
     </form>
     <div class="main">
