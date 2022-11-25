@@ -159,7 +159,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Sign Up</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles\loginRegister.css">
     <style>
     </style>
 </head>

@@ -3,7 +3,7 @@
     margin: 0;
 } 
 body {
-    background-image: url("images/Greenbackground.png");
+    background-image: url("../images/Greenbackground.png");
     background-size: contain;
 }
 .navbar {
